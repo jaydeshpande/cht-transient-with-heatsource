@@ -1,0 +1,178 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dictionaryReplacement
+{
+    boundary
+    {
+        wall
+        {
+            type            wall;
+        }
+        empty_air
+        {
+            type            empty;
+        }
+    }
+
+    U
+    {
+        internalField   uniform (0.1 0 0);
+
+        boundaryField
+        {
+
+
+            "air_to_.*"
+            {
+                type            fixedValue;
+                value           uniform (0 0 0);
+            }
+            empty_air
+            {
+                type            empty;
+            }
+            wall
+            {
+                type            fixedValue;
+                value           uniform ( 0 0 0);
+            }
+        }
+    }
+
+    T
+    {
+        internalField   uniform 300;
+
+        boundaryField
+        {
+            wall
+            {
+                type            fixedValue;
+                value           uniform 400;
+            }
+
+
+            "air_to_.*"
+            {
+                type            compressible::turbulentTemperatureCoupledBaffleMixed;
+                Tnbr            T;
+                kappa           fluidThermo;
+                kappaName       none;
+                value           uniform 300;
+            }
+            empty_air
+            {
+                type            empty;
+            }
+
+        }
+    }
+
+    epsilon
+    {
+        internalField   uniform 0.01;
+
+        boundaryField
+        {
+
+            wall
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+
+
+            "air_to_.*"
+            {
+                type            compressible::epsilonWallFunction;
+                value           uniform 0.01;
+            }
+            empty_air
+            {
+                type            empty;
+            }
+
+        }
+    }
+
+    k
+    {
+        internalField   uniform 0.1;
+
+        boundaryField
+        {
+            wall
+            {
+              type            compressible::kqRWallFunction;
+              value           uniform 0.1;
+            }
+
+            "air_to_.*"
+            {
+                type            compressible::kqRWallFunction;
+                value           uniform 0.1;
+            }
+            empty_air
+            {
+                type            empty;
+            }
+
+        }
+    }
+
+    p_rgh
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            fixedFluxPressure;
+                value           uniform 1e5;
+            }
+
+            empty_air
+            {
+                type            empty;
+            }
+
+
+        }
+    }
+
+    p
+    {
+        internalField   uniform 1e5;
+
+        boundaryField
+        {
+            ".*"
+            {
+                type            calculated;
+                value           uniform 1e5;
+            }
+
+            empty_air
+            {
+                type            empty;
+            }
+        }
+    }
+}
+
+// ************************************************************************* //
